@@ -1,0 +1,116 @@
+%====================================================================
+\documentclass[11pt,a4paper]{article}
+%====================================================================
+\input{Preamble}
+\title{Developping the interfacial terms in the averaged mass balance for a solidification shrinkage configuration}
+\author{Ali SAAD}
+\begin{document}
+\maketitle
+%\dosecttoc
+%\faketableofcontents
+%\secttoc
+%\clearpage
+
+\section{What is shrinkage ?}
+Shrinkage, in its simplest definition, is the volume decrease/contraction of a body. In the context of solidification, we
+speak of \emph{solidification shrinkage}. Three factors may contribute to this phenomenon, often simultaneously:
+\begin{itemize}
+\item $\rhol \neq \rhos$: density jump between the solid and liquid phase (even if these are constant). This is type 1 (T1)
+\item $\rhol \brac{T,\wl} $: liquid density variations with temperature and the intrinsic average composition of the liquid. This is type 2 (T2)
+\item $\rhos \brac{T,\ws} $: solid density variations with temperature and the intrinsic average composition of the solid. This is type 3 (T3)
+\end{itemize}  
+%====================================================================
+\section{Modeling shrinkage}
+Three scenarions are treated in this report. The first scenario considers only T1 shrinkage. The second considers T1 and T2, while the third scenario considers all three 
+types simultaneously. First, let us introduce the mass balance, averaged over each phase with the interfacial transfer terms.
+\begin{subequations}
+\begin{align}
+\label{eq:mass_liquid}
+& \temp{\gl \rhol} + \nabla \cdot \brac{\gl \rhol \vl} = S_V \langle \rhol \vec{v}^{l^*} \cdot \vec{n} \rangle^* - S_V \langle \rhol \vec{v}^* \cdot \vec{n} \rangle^* \\
+\label{eq:mass_solid}
+& \temp{\gs \rhos} + \nabla \cdot \brac{\gs \rhos \vs} = - S_V \langle \rhos \vec{v}^{s^*} \cdot \vec{n} \rangle^* + S_V \langle \rhos \vec{v}^* \cdot \vec{n} \rangle^*
+\end{align}
+\end{subequations}
+where $S_V= A_{sl}/V_{RVE}$ is the specific surface area, $\vec{v}^{l^*}$ and $\vec{v}^{s^*}$ are respectively, the liquid and solid phase velocity at the interface and $\vec{v}^*$ is the solid-liquid interface velocity. For instance, the first RHS term is expanded as follows [Dan2009]:
+\begin{subequations}
+\begin{align}
+S_V \langle \rhol \vec{v}^{l^*} \cdot \vec{n} \rangle^*
+  &= \frac{A_{sl}}{V_{RVE}} \brac{ \frac{1}{A_{sl}} \int_{A_{sl}} \rhol \vec{v}^{l^*} \cdot \vec{n} dA} \\
+&=\frac{1}{V_{RVE}} \int_{A_{sl}} \rhol \vec{v}^{l^*} \cdot \vec{n} dA
+\end{align}
+\end{subequations}
+Summing equations \eqref{eq:mass_liquid} and \eqref{eq:mass_solid}, results in the overall mass balance
+in the RVE:
+\begin{subequations}
+\begin{align}
+& \temp{\gl \rhol + \gs \rhos}  +  \nabla \cdot \brac{\gl \rhol \vl + \gs \rhos \vs}
+   =  S_V \avg{\rhol \brac{\vec{v}^{l^*}-\vec{v}^{*}} \cdot \vec{n}}^*  
+   -  S_V \avg{\rhos \brac{\vec{v}^{s^*}-\vec{v}^{*}} \cdot \vec{n}}^*  \\
+& \temp{\gl \rhol + \gs \rhos}  +  \nabla \cdot \brac{\gl \rhol \vl + \gs \rhos \vs}
+   =  S_V \avg{\rhol \brac{\vec{v}^{l^*}} \cdot \vec{n}}^*  
+   -  S_V \avg{\rhos \brac{\vec{v}^{s^*}} \cdot \vec{n}}^*  
+   -  S_V \avg{\brac{\rhos+\rhol} \vec{v}^{*} \cdot \vec{n}}^* 
+\end{align}
+\end{subequations}
+
+\subsection{First scenario: T1}
+2 main assumptions are made:
+\begin{itemize}
+\item the solid phase is fixed ($\vs=\vec{0}$)
+\item the solid and liquid densities are constant but not equal
+\end{itemize}
+Under these assumptions, we may rewrite the mass balance for the liquid phase:
+\begin{subequations}
+\begin{align}
+& \rhol\tempn{\gl} + \nabla \cdot \brac{\gl \rhol \vl} = \rhol  S_V \avg{ \brac{\vec{v}^{l^*}-\vec{v}^{*}} \cdot \vec{n}}^*  \\
+&  \tempn{\gl} + \nabla \cdot \brac{\gl \vl} =  S_V \avg{ \brac{\vec{v}^{l^*}-\vec{v}^{*}} \cdot \vec{n}}^*  \\
+\label{eq:balance_liquid}
+&  \nabla \cdot \brac{\gl \vl} = \tempn{\gs} + S_V \avg{ \brac{\vec{v}^{l^*}-\vec{v}^{*}} \cdot \vec{n}}^*
+\end{align}
+\end{subequations}
+Repeating the same procedure for the solid gives:
+Under these assumptions, we may rewrite the mass balance for the liquid phase:
+\begin{subequations}
+\begin{align}
+& \rhos\tempn{\gs } + \cancel{\nabla \cdot \brac{\gs \rhos \vs} } = - \cancel{S_V \avg{ \rhos \vec{v}^{s^*} \cdot \vec{n}}^*} + S_V \avg{\rhos \vec{v}^* \cdot \vec{n}}^*  \\
+\label{eq:balance_solid}
+&  \tempn{\gs}  = S_V \avg{ \vec{v}^* \cdot \vec{n}}^*
+\end{align}
+\end{subequations}
+Inserting equation \eqref{eq:balance_solid} in \eqref{eq:balance_liquid} yields:
+\begin{subequations}
+\begin{align}
+&  \nabla \cdot \brac{\gl \vl} = S_V \avg{ \vec{v}^* \cdot \vec{n}}^* + S_V \avg{ \brac{\vec{v}^{l^*}-\vec{v}^{*}} \cdot \vec{n}}^* \\
+\label{eq:mass_balance_phases}
+& \boxed{ \nabla \cdot \brac{\gl \vl} 
+		= \nabla \cdot \avg{\vec{v}^l}  
+		= S_V \avg{ \vec{v}^{l^*} \cdot \vec{n}}^*} \\
+%
+%& \gl \nabla \cdot \vl + \vl \nabvec 
+%		= S_V \avg{ \vec{v}^{l^*} \cdot \vec{n}}^* \\
+%& \gl \nabla \cdot \vl
+%		= S_V \avg{ \vec{v}^{l^*} \cdot \vec{n}}^* - S_V \avg{\vec{n}}^*
+\end{align}
+\end{subequations}
+We have averaged the mass balance separately in each phase to find equation \eqref{eq:mass_balance_phases}.
+Now, we will start from the mass balance averaged over the RVE containing both phases:
+\begin{subequations}
+\begin{align}
+& \frac{\partial \avg{\rho}}{\partial t} + \nabla \cdot \avg{\rho \vec{v}}  = 0 \\ 
+& \frac{\partial }{\partial t} \brac{ g^l \rho^l + g^s \rho^s} + \nabla \cdot \brac{ g^l \rho^l \vec{v}^l} = 0 \\ 
+& g^l \cancel{\frac{\partial \rho^l }{\partial t}} + \rho^l \frac{\partial  g^l }{\partial t} 
+	+ g^s \cancel{\frac{\partial \rho^s }{\partial t}} + \rho^s \frac{\partial  g^s }{\partial t} 
+	+ \rho^l \nabla \cdot \brac{ g^l \vec{v}^l} 
+	+ g^l \vec{v}^l \cdot  \cancel{ \nabvec \rho^l }	 = 0 \\
+& \brac{ \rho^l - \rho^s } \frac{\partial  g^l }{\partial t} + \rho^l \nabla \cdot \brac{ g^l \vec{v}^l}  = 0 \\
+\label{eq:mass_balance}
+& \boxed{\nabla \cdot \brac{ g^l \vec{v}^l} 
+ 	= \nabla \cdot \avg{\vec{v}^l} 
+ 	= \frac{\rho^l-\rho^s}{\rho^l} \frac{\partial  g^s }{\partial t}}
+\end{align}
+\end{subequations}
+
+
+
+
+\end{document}
