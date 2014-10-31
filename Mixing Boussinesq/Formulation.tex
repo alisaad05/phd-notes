@@ -1,0 +1,91 @@
+%====================================================================
+\documentclass[11pt,a4paper]{article}
+%====================================================================
+\input{Preamble}
+\title{Levelset-mixing of Navier-Stokes equations with Boussinesq:\\ Incompressible multiphase flow }
+\author{Ali SAAD}
+\begin{document}
+\maketitle
+%\dosecttoc
+%\faketableofcontents
+%\secttoc
+%\clearpage
+%====================================================================
+\section{Introduction}
+This report addresses the volume force added by the Boussinesq approximation to the incompressible Navier Stokes equations
+when we solve a multiphase flow. Such flow is characterized by the presence of at least two immiscible fluids. \\
+The same situation is encountered when treating for instance the SMACS benchmark case before the onset of solidification, where we have two distinct fluids: air and liquid metal.
+The flow at this stage is driven by thermal convection using side exchangers: one is cooler than the liquid metal, while the other is hotter.
+Since for now solidification is not accounted for, there will no mention of the Darcy interfacial terms. They will be discussed later.
+%====================================================================
+\section{Monophase flow: momentum conservation}
+In the case of a single phase fluid flow, the incompressible Navier Stokes equations, with the only external volume 
+force applied to the fluid being its body weight, are written as:
+\begin{align}
+\label{eq:NS_monophase}
+& \rho \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \sigma + \rhog \\ 
+& \nabla \cdot \v = 0
+\end{align}
+where $\rho$, $v$, $\sigma$ and $\gravity$ are respectively the fluid's density, fluid's velocity, stress tensor and the gravity vector.
+Now, suppose that density is subject to thermal variations, then the Boussinesq holds a good approximation if these variations remain small (order of magnitude given later).
+The approximation is introduced by a temperature-dependent density, $\rhobouss$, in the weight force:
+\begin{align}
+\label{eq:boussinesq}
+\rhobouss &= \rho_0 \theta \\ 
+          &= \rho_0 \brac{1-\betaT \brac{T-\Tref}}
+\end{align}
+while the inertial term is kept at reference density $\rho_0 = \rhobouss(\Tref)$. This is acceptable as long as the coefficient $\theta$
+satisfies the relation $\betaT \brac{T-\Tref} \ll 1$.
+\comment{the only reference that states this fact is FLUENT's reference guide. I should search for more formal source}
+
+%====================================================================
+\section{Multiphase flow: momentum conservation}
+The monolithic Eulerian appraoches are very interesting in the computational fluid field as they rely on a fixed mesh
+where all fluids are treated as a single one. This fluid's thermophysical and mechanical properties are obtained by a 
+mixture of those fluids properties. The level set is one of the most suited approaches for multiphase flows.
+\subsection{Levelset formulation}
+Introducing the levelset function $\alpha$ (signed distance function) helps tracking implicitly the interface between two fluids, $F_1$ and $F_2$.
+The distance between any point in space, $x$, and the interface, $\Gamma$, also denoted $d_{\Gamma} \brac{x}$, is used to track the interface as follows:
+\begin{align}
+\levelset = 
+\begin{cases}
+ d_{\Gamma} \brac{x} 		& \text{ if } x \in F_1 \\ 
+ -d_{\Gamma} \brac{x}	 	& \text{ if } x \in F_2 \\ 
+ 0 							& \text{ if } x \in \Gamma_{F1, F2} 
+\end{cases}
+\end{align}
+However, the previous function gives only the distance information, thus useless to mix the fluids properties.
+The solution is to process the levelset to extract a presence function or the \emph{Heaviside} function, for each fluid.
+In the literature, many definitions exist, depending on the function's steepness, continuity or differentiability. In our case, we consider the 
+smoothed Heaviside based on a sinusoidal function, given by:
+\begin{align}
+\heaviside\brac{\levelset} = 
+\begin{cases}
+	1  & \text{ if } \levelset < \epsilon \\
+    0  & \text{ if } \levelset > \epsilon \\  
+    \frac{1}{2} \brac{1+ \frac{\levelset}{\epsilon} + \frac{1}{\epsilon}\sin \brac{\frac{\pi \levelset}{\epsilon }} } & \text{ if } - \epsilon \leq \levelset \leq \epsilon
+\end{cases}
+\end{align}
+where the interval $\crochet{-\epsilon; \epsilon}$ is an artificial interface thickness around the zero distance. 
+It should be noted that a sinusoidal-based Heaviside is continuously differentiable.
+It is clear from the definition above, that the sum of the Heaviside functions for all the fluids is equal to $1$
+in any point of the mesh. Bearing in mind that $\heaviside^{F_2} = 1-\heaviside^{F_1}$, the properties $\psi^{F_1}$ and $\psi^{F_2}$ 
+are mixed using the Heaviside functions of both fluids:
+\begin{align}
+\label{eq:mixing}
+\mix{\psi} = \heaviside^{F_1} \psi^{F_1} + \heaviside^{F_2} \psi^{F_2}
+\end{align}
+
+\subsection{Mixed Navier Stokes equations}
+In the case of 2 incompressible fluids, the Navier Stokes system writes: 
+\begin{align}
+\label{eq:NS_multiphase}
+& \mix{\rho} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \mix{\sigma} + \mix{\rho} g \\ 
+& \nabla \cdot \v = 0
+\end{align}
+where the density and the stress tensor are mixed using the Heaviside defined in the previous section.
+
+
+
+
+\end{document}
