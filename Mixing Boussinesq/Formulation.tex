@@ -31,11 +31,11 @@ Now, suppose that density is subject to thermal variations, then the Boussinesq 
 The approximation is introduced by a temperature-dependent density, $\rhobouss$, in the weight force:
 \begin{align}
 \label{eq:boussinesq}
-\rhobouss &= \rho_0 \theta \\ 
-          &= \rho_0 \brac{1-\betaT \brac{T-\Tref}}
+\rhobouss % &= \rho_0 \theta \\ 
+          	&= \rho_0 \brac{1-\betaT \brac{T-\Tref}}
 \end{align}
-while the inertial term is kept at reference density $\rho_0 = \rhobouss(\Tref)$. This is acceptable as long as the coefficient $\theta$
-satisfies the relation $\betaT \brac{T-\Tref} \ll 1$.
+while the inertial term is kept at reference density $\rho_0 = \rhobouss(\Tref)$. This is acceptable as long as the relation
+$\betaT \brac{T-\Tref} \ll 1$ is satisfied.
 \comment{the only reference that states this fact is FLUENT's reference guide. I should search for more formal source}
 
 %====================================================================
@@ -83,7 +83,14 @@ In the case of 2 incompressible fluids, the Navier Stokes system writes:
 & \mix{\rho} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \mix{\sigma} + \mix{\rho} g \\ 
 & \nabla \cdot \v = 0
 \end{align}
-where the density and the stress tensor are mixed using the Heaviside defined in the previous section.
+where the density and the stress tensor are mixed using the previously defined Heaviside function. Considering that the concerned fluids 
+are Newtonian, the stress tensor can be expressed in terms of strain rate tensor as: $\sigma = 2\mu \dot{\epsilon}$, hence Navier Stokes 
+equations are updated accordingly:
+\begin{align}
+\label{eq:NS_multiphase_2}
+& \mix{\rho} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = 2\mix{\mu} \nabvec \cdot \mix{\dot{\epsilon}} + \mix{\rho} g \\ 
+& \nabla \cdot \v = 0
+\end{align}
 
 
 
