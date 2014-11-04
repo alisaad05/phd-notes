@@ -34,9 +34,15 @@ The approximation is introduced by a temperature-dependent density, $\rhobouss$,
 \rhobouss % &= \rho_0 \theta \\ 
           	&= \rho_0 \brac{1-\betaT \brac{T-\Tref}}
 \end{align}
-while the inertial term is kept at reference density $\rho_0 = \rhobouss(\Tref)$. This is acceptable as long as the relation
-$\betaT \brac{T-\Tref} \ll 1$ is satisfied.
-\comment{the only reference that states this fact is FLUENT's reference guide. I should search for more formal source}
+while the inertial term is kept at reference density $\rho_0 = \rhobouss(\Tref)$. This is acceptable as long as the coefficient $\theta$
+satisfies the relation $\betaT \brac{T-\Tref} \ll 1$.
+\comment{the only reference that states this fact is FLUENT's reference guide. I should search for more formal sources}
+In these conditions, \eqref{eq:NS_monophase} is written with the variable force term:
+\begin{align}
+\label{eq:NS_monophase_boussinesq}
+& \rho_0 \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \sigma + \rhobouss \gravity \\ 
+& \nabla \cdot \v = 0
+\end{align}
 
 %====================================================================
 \section{Multiphase flow: momentum conservation}
@@ -67,7 +73,7 @@ smoothed Heaviside based on a sinusoidal function, given by:
 \end{cases}
 \end{align}
 where the interval $\crochet{-\epsilon; \epsilon}$ is an artificial interface thickness around the zero distance. 
-It should be noted that a sinusoidal-based Heaviside is continuously differentiable.
+The advantage of a sinusoidal-based Heaviside is that it's continuously differentiable in $\crochet{-\epsilon; \epsilon}$.
 It is clear from the definition above, that the sum of the Heaviside functions for all the fluids is equal to $1$
 in any point of the mesh. Bearing in mind that $\heaviside^{F_2} = 1-\heaviside^{F_1}$, the properties $\psi^{F_1}$ and $\psi^{F_2}$ 
 are mixed using the Heaviside functions of both fluids:
@@ -80,19 +86,44 @@ are mixed using the Heaviside functions of both fluids:
 In the case of 2 incompressible fluids, the Navier Stokes system writes: 
 \begin{align}
 \label{eq:NS_multiphase}
-& \mix{\rho} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \mix{\sigma} + \mix{\rho} g \\ 
+& \mix{\rho} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \mix{\sigma} + \mix{\rho} \gravity \\ 
 & \nabla \cdot \v = 0
 \end{align}
-where the density and the stress tensor are mixed using the previously defined Heaviside function. Considering that the concerned fluids 
-are Newtonian, the stress tensor can be expressed in terms of strain rate tensor as: $\sigma = 2\mu \dot{\epsilon}$, hence Navier Stokes 
-equations are updated accordingly:
+where the density and the stress tensor are mixed using the Heaviside defined in the previous section.
+Assuming that both fluids densities may vary with temperature, the momentum conservation equation \eqref{eq:NS_multiphase}
+can be written with the Boussinesq approximation:
 \begin{align}
-\label{eq:NS_multiphase_2}
-& \mix{\rho} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = 2\mix{\mu} \nabvec \cdot \mix{\dot{\epsilon}} + \mix{\rho} g \\ 
+\label{eq:NS_multiphase_boussinesq}
+& \mix{\rho_0} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \mix{\sigma} + \mix{\rhobouss} \gravity \\ 
 & \nabla \cdot \v = 0
 \end{align}
+The term $\mix{\rhobouss}$ represents a mixture of two densities, each of which may vary with temperature independently from the other,
+as follows:
+\begin{align}
+\label{eq:boussinesq_mix}
+\mix{\rhobouss} &= \heaviside^{F_1} \rhobouss^{F_1} + \heaviside^{F_2} \rhobouss^{F_2} \\
+				&= \heaviside^{F_1} \rho_0^{F_1} \theta^{F_1} + \heaviside^{F_2} \rho_0^{F_2} \theta^{F_2} \\
+				&= \heaviside^{F_1} \rho_0^{F_1} \brac{1-\betaT^{F_1} \brac{T-\Tref^{F_1}}} + \heaviside^{F_2} \rho_0^{F_2} \brac{1-\betaT^{F_2} \brac{T-\Tref^{F_2}}}
+\end{align}
 
-
-
+\subsection*{Cimlib Implementation}
+The previous set of incompressible momentum equations with boussinesq approximation mixed with a level set for two fluids is solved
+using the \textsf{NavierStokesVMS} solver in \cimlib. Apart from the classic input parameters that are passed to the solver (e.g. 
+time step, initial and boundary conditions ...), the latter takes also the mixed reference density, $\mix{\rho_0}$, the mixed 
+viscosity, $\mix{\mu}$, and the gravity vector, $\gravity$. The weight force is automatically computed inside the solver by 
+P1-P1 multiplication of the inertial density and the gravity vector. The user should consequently multiply the mixed Boussinesq coefficient $\theta$ by $\gravity$
+in a way to form the final volume force: $\mix{\rho_0} \mix{\theta} \gravity $.
+However, in the current context, this term is wrong, as it infers a redundancy in the Heaviside multiplication:
+\begin{align}	
+%\label{eq:}
+\mix{\rhobouss} \gravity &= \mix{\rho_0} \mix{\theta} \gravity \\
+						 &= \brac{\red{\heaviside^{F_1}} \rho_0^{F_1} + \red{\heaviside^{F_2}} \rho_0^{F_2}} \brac{\red{\heaviside^{F_1}} \theta^{F_1} + \red{\heaviside^{F_2} }\theta^{F_2}} \gravity
+\end{align}
+The correct handling of the Boussinesq force in a monolithic approach is given by:
+\begin{align}	
+%\label{eq:}
+\mix{\rhobouss} \gravity &= \mix{\rho_0 \theta} \gravity \\
+						 &= \brac{\red{ \heaviside^{F_1} } \theta^{F_1} \rho_0^{F_1} + \red{\heaviside^{F_2} } \theta^{F_2} \rho_0^{F_2}} \gravity
+\end{align}
 
 \end{document}

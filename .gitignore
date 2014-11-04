@@ -3,4 +3,7 @@
 *.pptx
 *.doc
 *.docx
+*.log
+*.aux
+*.gz
 /TEXUS monolithic
