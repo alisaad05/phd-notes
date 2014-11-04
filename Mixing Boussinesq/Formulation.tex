@@ -34,8 +34,8 @@ The approximation is introduced by a temperature-dependent density, $\rhobouss$,
 \rhobouss % &= \rho_0 \theta \\ 
           	&= \rho_0 \brac{1-\betaT \brac{T-\Tref}}
 \end{align}
-while the inertial term is kept at reference density $\rho_0 = \rhobouss(\Tref)$. This is acceptable as long as the coefficient $\theta$
-satisfies the relation $\betaT \brac{T-\Tref} \ll 1$.
+while the inertial term is kept at reference density $\rho_0 = \rhobouss(\Tref)$. This is acceptable as long as the relation
+$\theta = \betaT \brac{T-\Tref} \ll 1$ is satisfied.
 \comment{the only reference that states this fact is FLUENT's reference guide. I should search for more formal sources}
 In these conditions, \eqref{eq:NS_monophase} is written with the variable force term:
 \begin{align}
@@ -89,12 +89,19 @@ In the case of 2 incompressible fluids, the Navier Stokes system writes:
 & \mix{\rho} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \mix{\sigma} + \mix{\rho} \gravity \\ 
 & \nabla \cdot \v = 0
 \end{align}
-where the density and the stress tensor are mixed using the Heaviside defined in the previous section.
-Assuming that both fluids densities may vary with temperature, the momentum conservation equation \eqref{eq:NS_multiphase}
+where the density and the stress tensor are mixed using the previously defined Heaviside function. When the concerned fluids 
+are Newtonian, the stress tensor can be expressed in terms of strain rate tensor as: $\sigma = 2\mu \dot{\epsilon}$, hence Navier Stokes 
+equations are updated accordingly:
+\begin{align}
+\label{eq:NS_multiphase_2}
+& \mix{\rho} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = 2\mix{\mu} \nabvec \cdot \dot{\epsilon} + \mix{\rho} g \\ 
+& \nabla \cdot \v = 0
+\end{align}
+Assuming that both fluids densities may vary with temperature, the momentum conservation equation \eqref{eq:NS_multiphase_2}
 can be written with the Boussinesq approximation:
 \begin{align}
 \label{eq:NS_multiphase_boussinesq}
-& \mix{\rho_0} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = \nabvec \cdot \mix{\sigma} + \mix{\rhobouss} \gravity \\ 
+& \mix{\rho_0} \brac{\frac{\partial \v}{\partial t} + \brac{\nabmat \v} \v } = 2\mix{\mu} \nabvec \cdot \dot{\epsilon} + \mix{\rhobouss} \gravity \\ 
 & \nabla \cdot \v = 0
 \end{align}
 The term $\mix{\rhobouss}$ represents a mixture of two densities, each of which may vary with temperature independently from the other,

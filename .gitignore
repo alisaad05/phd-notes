@@ -6,4 +6,5 @@
 *.log
 *.aux
 *.gz
+*.synctex.gz
 /TEXUS monolithic
