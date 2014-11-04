@@ -7,4 +7,5 @@
 *.aux
 *.gz
 *.synctex.gz
+*.out
 /TEXUS monolithic
